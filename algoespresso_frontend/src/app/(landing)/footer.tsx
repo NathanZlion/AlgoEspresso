@@ -7,9 +7,7 @@ import Link from "next/link";
 import React from "react"
 
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> { }
-
-const FooterSection = React.forwardRef<HTMLElement, ButtonProps>(
+const FooterSection = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
     ({ className, ...props }, ref) => {
         return (
             <footer
@@ -37,8 +35,6 @@ const FooterSection = React.forwardRef<HTMLElement, ButtonProps>(
                             </Avatar>
                             <div className="text-base font-azeretMono font-extrabold">Star Repo on Github</div>
                         </Link>
-
-                        
                     </div>
 
                     <div className="w-full lg:px-10 flex flex-row justify-evenly">
@@ -49,7 +45,7 @@ const FooterSection = React.forwardRef<HTMLElement, ButtonProps>(
                         </div>
 
                         <div className="flex flex-col gap-5">
-                            <div className="lg:text-xl text-primary/35"> Let's Connect </div>
+                            <div className="lg:text-xl text-primary/35"> Let&apos;s Connect </div>
                             <LinkWithIcon title="Email" href="mailto:nathandere1357@gmail.com" />
                             <LinkWithIcon title="Linkedin" href="https://www.linkedin.com/in/nathnael-dereje/" />
                             <LinkWithIcon title="Github" href="https://github.com/NathanZlion/" />
@@ -76,4 +72,7 @@ const FooterSection = React.forwardRef<HTMLElement, ButtonProps>(
         );
     }
 )
+
+FooterSection.displayName = "Footer";
+
 export default FooterSection;

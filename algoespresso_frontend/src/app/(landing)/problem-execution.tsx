@@ -45,7 +45,7 @@ export default function ProblemSolving() {
 
                 <div className="container order-1 lg:order-2 w-full h-full  grid grid-row-6  lg:col-span-2">
                     <div className="w-full row-span-4 flex flex-col justify-evenly">
-                        <h1 className="lg:text-3xl text-start">// Code. Submit. Compete. </h1>
+                        <h1 className="lg:text-3xl text-start"># Code. Submit. Compete. </h1>
                         <h1 className="lg:text-3xl bg-gradient-to-r from-primary to-red-300 text-transparent bg-clip-text text-justify"> Run, Compare runtimes.</h1>
                         <h2 className="lg:text-8xl bg-gradient-to-r from-amber-700 via-red-300 to-primary block text-transparent bg-clip-text">Optimize </h2>
                     </div>

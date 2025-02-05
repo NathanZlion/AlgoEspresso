@@ -38,5 +38,7 @@ const LinkWithIcon = React.forwardRef<HTMLAnchorElement, LinkWithIconProps>(
     }
 )
 
+LinkWithIcon.displayName = "LinkWithIcon";
+
 
 export { LinkWithIcon }

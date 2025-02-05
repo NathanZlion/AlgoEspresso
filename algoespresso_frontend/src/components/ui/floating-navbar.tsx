@@ -9,15 +9,18 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+
+type navItem = {
+    name: string;
+    link: string;
+    icon?: JSX.Element;
+}
+
 export const FloatingNav = ({
     navItems,
     className,
 }: {
-    navItems: {
-        name: string;
-        link: string;
-        icon?: JSX.Element;
-    }[];
+    navItems: navItem[];
     className?: string;
 }) => {
     const { scrollYProgress } = useScroll();
@@ -25,21 +28,8 @@ export const FloatingNav = ({
     const [visible, setVisible] = useState(false);
 
     useMotionValueEvent(scrollYProgress, "change", (current) => {
-        // Check if current is not undefined and is a number
         if (typeof current === "number") {
-            // let direction = current! - scrollYProgress.getPrevious()!;
-
-            if (scrollYProgress.get() < 0.05) {
-                setVisible(false);
-            } else {
-                // visible when navbar is out of sight
-                setVisible(true);
-                // if (direction > 0) {
-                //     setVisible(true);
-                // } else {
-                //     setVisible(false);
-                // }
-            }
+            setVisible(scrollYProgress.get() > 0.05);
         }
     });
 
@@ -62,7 +52,7 @@ export const FloatingNav = ({
                     className
                 )}
             >
-                {navItems.map((navItem: any, idx: number) => (
+                {navItems.map((navItem: navItem, idx: number) => (
                     <Link
                         key={`link=${idx}`}
                         href={navItem.link}

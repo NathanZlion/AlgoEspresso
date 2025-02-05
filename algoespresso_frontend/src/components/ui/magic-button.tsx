@@ -46,4 +46,7 @@ const MagicButton = React.forwardRef<HTMLButtonElement, MagicButtonProps>(
     }
 )
 
+
+MagicButton.displayName = "MagicButton"
+
 export { MagicButton }

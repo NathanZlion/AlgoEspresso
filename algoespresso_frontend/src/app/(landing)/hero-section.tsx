@@ -8,7 +8,7 @@ export default function HeroSection() {
             <div className="flex flex-col gap-9 items-center lg:items-start justify-between h-2/3 lg:h-fit">
                 <BackgroundBeams />
                 <div className="w-full text-center lg:text-start">
-                    <h1>Don't Just Code</h1>
+                    <h1>Don&apos;t Just Code</h1>
                     <div>
                         <span>Learn </span>
                         <span className="italic text-primary stroke-secondary stroke-1 fill-transparent">To Solve</span>
