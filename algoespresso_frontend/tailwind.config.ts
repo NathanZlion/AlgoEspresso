@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+// @ts-ignore
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 
 
@@ -66,7 +67,6 @@ const config: Config = {
 	},
 	plugins: [require("tailwindcss-animate"), addVariablesForColors],
 };
-
 
 function addVariablesForColors({ addBase, theme }: any) {
 	let allColors = flattenColorPalette(theme("colors"));
