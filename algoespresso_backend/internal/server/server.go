@@ -1,38 +1,25 @@
 package server
 
 import (
-	"fmt"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
-
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/gofiber/fiber/v2"
 
 	"algoespresso_backend/internal/database"
 )
 
-type Server struct {
-	port int
+type FiberServer struct {
+	*fiber.App
 
 	db database.Service
 }
 
-func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	NewServer := &Server{
-		port: port,
+func New() *FiberServer {
+	server := &FiberServer{
+		App: fiber.New(fiber.Config{
+			ServerHeader: "algoespresso_backend",
+			AppName:      "algoespresso_backend",
+		}),
 
 		db: database.New(),
-	}
-
-	// Declare Server config
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", NewServer.port),
-		Handler:      NewServer.RegisterRoutes(),
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
 	}
 
 	return server
