@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"reflect"
 	"strconv"
 	"syscall"
 	"time"
@@ -33,7 +32,7 @@ func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
 		log.Printf("Server forced to shutdown %v\n", err)
 	}
 
-	log.Println("Server stopped!")
+	log.Println("Server shutdown complete signaled!")
 
 	shutdownComplete <- true
 }
@@ -62,25 +61,13 @@ func startServer(deps ServerStartDependencies) {
 
 	// wait for a graceful shutdown comlete to be sent through the channel
 	<-shutdownComplete
-
-	log.Println("Server shutdown gracefully completed")
+	os.Exit(0)
 }
 
 func main() {
 	container := injection.Register()
-	var server *bootstrap.Server
-
-	container.Invoke(func(target *bootstrap.Server) {
-		val := reflect.ValueOf(target)
-		if val.Kind() != reflect.Ptr {
-			panic("target must be a pointer")
-		}
-		val.Elem().Set(reflect.ValueOf(target))
-	})
-
-	fmt.Printf("server instance %v\n", server)
-
 	err := container.Invoke(startServer)
+	fmt.Println(err)
 
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v\n", err))
