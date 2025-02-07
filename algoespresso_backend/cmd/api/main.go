@@ -1,57 +1,88 @@
 package main
 
 import (
+	"algoespresso_backend/bootstrap"
+	"algoespresso_backend/injection"
 	"context"
 	"fmt"
 	"log"
-	"net/http"
+	"os"
 	"os/signal"
+	"reflect"
+	"strconv"
 	"syscall"
 	"time"
 
-	"algoespresso_backend/internal/server"
+	_ "github.com/joho/godotenv/autoload"
+	"go.uber.org/dig"
 )
 
-func gracefulShutdown(apiServer *http.Server, done chan bool) {
-	// Create context that listens for the interrupt signal from the OS.
+func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	// Listen for the interrupt signal.
 	<-ctx.Done()
 
-	log.Println("shutting down gracefully, press Ctrl+C again to force")
+	log.Println("Server gracefully shutting down: Ctrl+C pressed, Press again to force shutdown!")
 
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// timed request that gives the server 5 seconds to complete currently being handled requests
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	if err := apiServer.Shutdown(ctx); err != nil {
-		log.Printf("Server forced to shutdown with error: %v", err)
+
+	if err := server.ShutdownWithContext(ctx); err != nil {
+		log.Printf("Server forced to shutdown %v\n", err)
 	}
 
-	log.Println("Server exiting")
+	log.Println("Server stopped!")
 
-	// Notify the main goroutine that the shutdown is complete
-	done <- true
+	shutdownComplete <- true
+}
+
+type ServerStartDependencies struct {
+	dig.In
+	Server bootstrap.IServer `name:"Server"`
+}
+
+func startServer(deps ServerStartDependencies) {
+	// Register the handlers for the server
+	deps.Server.RegisterRoutes()
+
+	// channel to signal when the shutdown is complete
+	shutdownComplete := make(chan bool, 1)
+
+	// start server listening on port
+	go func() {
+		port, _ := strconv.Atoi(os.Getenv(("PORT")))
+		if err := deps.Server.Listen(fmt.Sprintf(":%d", port)); err != nil {
+			panic(fmt.Sprintf("Failed to start server %v\n", err))
+		}
+	}()
+
+	go gracefulShutdown(deps.Server, shutdownComplete)
+
+	// wait for a graceful shutdown comlete to be sent through the channel
+	<-shutdownComplete
+
+	log.Println("Server shutdown gracefully completed")
 }
 
 func main() {
+	container := injection.Register()
+	var server *bootstrap.Server
 
-	server := server.NewServer()
+	container.Invoke(func(target *bootstrap.Server) {
+		val := reflect.ValueOf(target)
+		if val.Kind() != reflect.Ptr {
+			panic("target must be a pointer")
+		}
+		val.Elem().Set(reflect.ValueOf(target))
+	})
 
-	// Create a done channel to signal when the shutdown is complete
-	done := make(chan bool, 1)
+	fmt.Printf("server instance %v\n", server)
 
-	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+	err := container.Invoke(startServer)
 
-	err := server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		panic(fmt.Sprintf("http server error: %s", err))
+	if err != nil {
+		panic(fmt.Sprintf("Failed to start server: %v\n", err))
 	}
-
-	// Wait for the graceful shutdown to complete
-	<-done
-	log.Println("Graceful shutdown complete.")
 }
