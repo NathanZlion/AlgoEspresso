@@ -19,10 +19,12 @@ type Env struct {
 	CacheDBPort           string
 	CacheDBPassword       string
 	CacheDBDatabaseNumber int
+	ClerkSecretKey        string
 }
 
 func NewEnv() Env {
 	var err error
+
 	port, err := strconv.Atoi(os.Getenv("PORT"))
 	cacheDBDatabaseNumber, err := strconv.Atoi(os.Getenv("CacheDBDatabaseNumber"))
 
@@ -40,6 +42,7 @@ func NewEnv() Env {
 		CacheDBHost:           os.Getenv("CacheDBHost"),
 		CacheDBPort:           os.Getenv("CacheDBPort"),
 		CacheDBPassword:       os.Getenv("CacheDBPassword"),
+		ClerkSecretKey:        os.Getenv("CLERK_SECRET_KEY"),
 		CacheDBDatabaseNumber: cacheDBDatabaseNumber,
 	}
 }

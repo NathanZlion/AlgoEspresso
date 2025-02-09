@@ -1,7 +1,7 @@
 package main
 
 import (
-	"algoespresso_backend/bootstrap"
+	"algoespresso_backend/application/server"
 	"algoespresso_backend/injection"
 	"context"
 	"fmt"
@@ -16,7 +16,7 @@ import (
 	"go.uber.org/dig"
 )
 
-func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
+func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
@@ -39,7 +39,7 @@ func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
 
 type ServerStartDependencies struct {
 	dig.In
-	Server bootstrap.IServer `name:"Server"`
+	Server server.IServer `name:"Server"`
 }
 
 func startServer(deps ServerStartDependencies) {
