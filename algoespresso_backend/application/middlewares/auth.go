@@ -12,30 +12,25 @@ func WithHeaderAuthorization(ctx *fiber.Ctx) error {
 	token := defaultAuthorizationJWTExtractor(ctx)
 
 	if token == "" {
-		log.Println("Token is empty")
+		log.Println("WithHeaderAuthorization: Token is empty, Skipping hydration")
 		return ctx.Next()
 	}
 
-	decoded, err := jwt.Decode(ctx.Context(), &jwt.DecodeParams{Token: token})
+	_, err := jwt.Decode(ctx.Context(), &jwt.DecodeParams{Token: token})
 
 	if err != nil {
-		log.Println("Failed to decode token")
+		log.Println("WithHeaderAuthorization: Failed to decode token, Skipping hydration")
 		return ctx.Next()
 	}
 
-	log.Printf("Unverified decoded token: %v \n", decoded)
 	claims, err := jwt.Verify(ctx.Context(), &jwt.VerifyParams{
 		Token: token,
 	})
 
-	log.Printf("Claims: %v", claims)
-
 	if err != nil {
-		log.Println("Failed to verify claim")
+		log.Println("WithHeaderAuthorization: Failed to verify claim, Skipping hydration")
 		return ctx.Next()
 	}
-
-	log.Println("Claim verified")
 
 	usr, err := user.Get(ctx.Context(), claims.Subject)
 
@@ -45,7 +40,7 @@ func WithHeaderAuthorization(ctx *fiber.Ctx) error {
 	}
 
 	ctx.Locals("user", *usr)
-	log.Printf("User Auth Hydrator: User data %v \n", usr)
+	log.Printf("WithHeaderAuthorization: User Data Hydrated to Context Successfully %v \n", usr.ID)
 
 	return ctx.Next()
 }
