@@ -2,6 +2,7 @@ package main
 
 import (
 	"algoespresso_backend/application/server"
+	"algoespresso_backend/core"
 	"algoespresso_backend/injection"
 	"context"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/clerk/clerk-sdk-go/v2"
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/dig"
 )
@@ -40,11 +42,14 @@ func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 type ServerStartDependencies struct {
 	dig.In
 	Server server.IServer `name:"Server"`
+	Config core.IConfig   `name:"Config"`
 }
 
 func startServer(deps ServerStartDependencies) {
 	// Register the handlers for the server
 	deps.Server.RegisterRoutes()
+	clerkSecret := deps.Config.GetEnv().ClerkSecretKey
+	clerk.SetKey(clerkSecret)
 
 	// channel to signal when the shutdown is complete
 	shutdownComplete := make(chan bool, 1)
@@ -61,15 +66,16 @@ func startServer(deps ServerStartDependencies) {
 
 	// wait for a graceful shutdown comlete to be sent through the channel
 	<-shutdownComplete
-	os.Exit(0)
 }
 
 func main() {
 	container := injection.Register()
 	err := container.Invoke(startServer)
-	fmt.Println(err)
 
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v\n", err))
 	}
+
+	log.Println("Shutdown Successful!")
+	os.Exit(0)
 }
