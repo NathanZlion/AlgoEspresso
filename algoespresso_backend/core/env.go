@@ -26,7 +26,7 @@ func NewEnv() Env {
 	var err error
 
 	port, err := strconv.Atoi(os.Getenv("PORT"))
-	cacheDBDatabaseNumber, err := strconv.Atoi(os.Getenv("CacheDBDatabaseNumber"))
+	cacheDBDatabaseNumber, err := strconv.Atoi(os.Getenv("CACHE_DB_DATABASE_NUMBER"))
 
 	if err != nil {
 		panic(fmt.Sprintf("Failed to read variables from environment: %v", err))
@@ -39,9 +39,9 @@ func NewEnv() Env {
 		DB_Port:               os.Getenv("DB_PORT"),
 		DB_Username:           os.Getenv("DB_USERNAME"),
 		DB_Root_Password:      os.Getenv("DB_ROOT_PASSWORD"),
-		CacheDBHost:           os.Getenv("CacheDBHost"),
-		CacheDBPort:           os.Getenv("CacheDBPort"),
-		CacheDBPassword:       os.Getenv("CacheDBPassword"),
+		CacheDBHost:           os.Getenv("CACHE_DB_HOST"),
+		CacheDBPort:           os.Getenv("CACHE_DB_PORT"),
+		CacheDBPassword:       os.Getenv("CACHE_DB_PASSWORD"),
 		ClerkSecretKey:        os.Getenv("CLERK_SECRET_KEY"),
 		CacheDBDatabaseNumber: cacheDBDatabaseNumber,
 	}
