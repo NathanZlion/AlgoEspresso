@@ -1,8 +1,9 @@
 package server
 
 import (
+	middleware "algoespresso_backend/application/middlewares"
 	"context"
-	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
@@ -68,24 +69,15 @@ func (s *Server) RegisterRoutes() {
 		return c.Next()
 	})
 
+	v1.Use(middleware.WithHeaderAuthorization)
+
+	s.RegisterProblemsRoutes(v1)
+
 	// webhook := s.App.Group("/webhook", func(c *fiber.Ctx) error {
 	// 	return c.Next()
 	// })
-
-	s.RegisterProblemsRoutes(v1)
 }
 
-func (s *Server) RegisterProblemsRoutes(router fiber.Router) {
-	problemRouter := router.Group("/problem")
-
-	fmt.Sprintf(":%v", s.App.Name("AppName"))
-
-	problemRouter.Get("/list", func(c *fiber.Ctx) error {
-		return c.SendString("Hello from list problems")
-	})
-
-	problemRouter.Get("/:id", func(c *fiber.Ctx) error {
-		id := c.Params("id")
-		return c.SendString(fmt.Sprintf("Hello from problem with id : %s", id))
-	})
+type Submittion struct {
+	Code string `json:"code" xml:"code" form:"code"`
 }
