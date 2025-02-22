@@ -2,18 +2,15 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"time"
 
+	_ "github.com/joho/godotenv/autoload"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 type IDatabase interface {
-	Connect() error
+	Connect(ConnectDbParams) error
 	Health() bool
 }
 
@@ -22,24 +19,21 @@ type Database struct {
 	client *mongo.Client
 }
 
-var (
-	host = os.Getenv("BLUEPRINT_DB_HOST")
-	port = os.Getenv("BLUEPRINT_DB_PORT")
-)
-
+// return just an empty instance with no connection
 func NewDatabase() *Database {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
-
-	if err != nil {
-		panic(err)
-	}
-
-	return &Database{
-		client: client,
-	}
+	return &Database{}
 }
 
-func (mongodbDatabase *Database) Connect() error {
+func (mongodbDatabase *Database) Connect(params ConnectDbParams) error {
+	client, err := mongo.Connect(
+		context.Background(),
+		options.Client().ApplyURI(params.Config.GetEnv().MongoDBConnectionString),
+	)
+
+	if err != nil {
+		return err
+	}
+	mongodbDatabase.client = client
 	return nil
 }
 

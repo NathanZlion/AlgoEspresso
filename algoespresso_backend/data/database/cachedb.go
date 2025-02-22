@@ -17,25 +17,23 @@ type CacheDB struct {
 	Client *redis.Client
 }
 
+// We need the config for the connection credentials and stuff
 func NewCacheDB(config core.Config) *CacheDB {
-	env := config.GetEnv()
-	host := env.CacheDBHost
-	port := env.CacheDBPort
-	password := env.CacheDBPassword
-	db := env.CacheDBDatabaseNumber
 
-	return &CacheDB{
-		Client: redis.NewClient(
-			&redis.Options{
-				Addr:     fmt.Sprintf("%s:%d", host, port),
-				Password: password,
-				DB:       db,
-			},
-		),
-	}
+	return &CacheDB{}
 }
 
-func (cache *CacheDB) Connect() error {
+func (cache *CacheDB) Connect(params ConnectDbParams) error {
+	env := params.Config.GetEnv()
+
+	cache.Client = redis.NewClient(
+		&redis.Options{
+			Addr:     fmt.Sprintf("%s:%d", env.CacheDBHost, env.CacheDBPort),
+			Password: env.CacheDBPassword,
+			DB:       env.CacheDBDatabaseNumber,
+		},
+	)
+
 	return nil
 }
 
