@@ -77,5 +77,4 @@ func main() {
 	}
 
 	log.Println("Shutdown Successful!")
-	os.Exit(0)
 }
