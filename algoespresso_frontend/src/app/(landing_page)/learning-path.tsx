@@ -115,7 +115,7 @@ function AnimatedText({ text, gradient, alignment }: { text: string; gradient: s
             transition={{ type: "spring", stiffness: 100 }}
             className={`absolute ${alignment === "right" ? "right-0 text-right" : "left-0"}`}
         >
-            <h2 className={`text-7xl font-bold ${gradient} bg-clip-text text-transparent`}>
+            <h2 className={`lg:text-7xl font-bold ${gradient} bg-clip-text text-transparent`}>
                 {text}
             </h2>
         </motion.div>

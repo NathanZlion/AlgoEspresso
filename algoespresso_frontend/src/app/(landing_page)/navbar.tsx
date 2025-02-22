@@ -3,9 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { MagicButton } from "@/components/ui/magic-button";
+import { SignUpButton } from "@clerk/nextjs"
 import Link from "next/link";
 
-export default function NavBar() {
+export default function LandingPageNavBar() {
     return (
         <nav className="flex flex-row p-2 justify-between border-0 border-b-2 border-b-foreground/15">
             <div className="container flex flex-row gap-4 items-center ps-5 lg:ps-20">
@@ -14,11 +15,12 @@ export default function NavBar() {
             </div>
 
             {/* option */}
-            <div className="flex flex-row justify-between items-center pe-5 lg:pe-20 gap-5">
-
-                <MagicButton className="font-azeretMono" onClick={() => { console.log("Clicked") }}>
-                    Get Started
-                </MagicButton>
+            <div className="flex flex-row justify-between items-center pe-5 lg:pe-20 gap-5 font-azeretMono">
+                <SignUpButton mode="modal" signInForceRedirectUrl={"/"}>
+                    <MagicButton className="font-azeretMono">
+                        Get Started
+                    </MagicButton>
+                </SignUpButton>
 
                 <Button variant={"link"} className="p-0">
                     <Link href={"https://github.com/NathanZlion/AlgoEspresso/"} target="_blank">
@@ -40,9 +42,12 @@ export default function NavBar() {
                 },
                 {
                     name: "",
-                    icon: <MagicButton className="font-azeretMono" onClick={() => { console.log("Clicked") }}>
-                        Get Started
-                    </MagicButton>,
+                    icon:
+                        <SignUpButton mode="modal" signInForceRedirectUrl={"/"} >
+                            <MagicButton className="font-azeretMono">
+                                Get Started
+                            </MagicButton>
+                        </SignUpButton>,
                     link: "/"
                 }
             ]} />
