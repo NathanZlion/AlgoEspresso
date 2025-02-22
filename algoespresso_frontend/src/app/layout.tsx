@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import LocalFont from "next/font/local"
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-
+import { ClerkProvider } from '@clerk/nextjs';
+import { dark, neobrutalism } from "@clerk/themes";
 
 const dotGothic16 = LocalFont(
   {
@@ -39,17 +40,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${AzeretMono.variable} ${dotGothic16.variable} antialiased bg-background`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-      </body>
-    </html >
+    <ClerkProvider appearance={{ baseTheme: dark }} >
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${AzeretMono.variable} ${dotGothic16.variable} antialiased bg-background`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </body>
+      </html >
+    </ClerkProvider>
   );
 }
