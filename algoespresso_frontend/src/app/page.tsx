@@ -1,21 +1,27 @@
 'use client'
 
-import FooterSection from "./(landing)/footer";
-import NavBar from "./(landing)/navbar";
-import HeroSection from "./(landing)/hero-section";
-import LearningPathSection from "./(landing)/learning-path";
-import ProblemSolving from "./(landing)/problem-execution";
-
+import LandingPage from "./(landing_page)/page";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="font-dotGothic">
-      <NavBar />
       <main>
-        <HeroSection />
-        <LearningPathSection />
-        <ProblemSolving />
-        <FooterSection className="my-4 lg:my-20 lg:mx-36 p-10 lg:p-16 lg:px-20" />
+        <SignedIn>
+          {(() => {
+            useEffect(() => {
+              router.replace('/app');
+            }, []);
+            return null;
+          })()}
+        </SignedIn>
+        <SignedOut>
+          <LandingPage />
+        </SignedOut>
       </main>
     </div>
   );
