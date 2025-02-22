@@ -1,23 +1,24 @@
 package main
 
 import (
-	"algoespresso_backend/bootstrap"
+	"algoespresso_backend/application/server"
+	"algoespresso_backend/core"
 	"algoespresso_backend/injection"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	"reflect"
 	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/clerk/clerk-sdk-go/v2"
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/dig"
 )
 
-func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
+func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
@@ -33,19 +34,22 @@ func gracefulShutdown(server bootstrap.IServer, shutdownComplete chan bool) {
 		log.Printf("Server forced to shutdown %v\n", err)
 	}
 
-	log.Println("Server stopped!")
+	log.Println("Server shutdown complete signaled!")
 
 	shutdownComplete <- true
 }
 
 type ServerStartDependencies struct {
 	dig.In
-	Server bootstrap.IServer `name:"Server"`
+	Server server.IServer `name:"Server"`
+	Config core.IConfig   `name:"Config"`
 }
 
 func startServer(deps ServerStartDependencies) {
 	// Register the handlers for the server
 	deps.Server.RegisterRoutes()
+	clerkSecret := deps.Config.GetEnv().ClerkSecretKey
+	clerk.SetKey(clerkSecret)
 
 	// channel to signal when the shutdown is complete
 	shutdownComplete := make(chan bool, 1)
@@ -62,27 +66,15 @@ func startServer(deps ServerStartDependencies) {
 
 	// wait for a graceful shutdown comlete to be sent through the channel
 	<-shutdownComplete
-
-	log.Println("Server shutdown gracefully completed")
 }
 
 func main() {
 	container := injection.Register()
-	var server *bootstrap.Server
-
-	container.Invoke(func(target *bootstrap.Server) {
-		val := reflect.ValueOf(target)
-		if val.Kind() != reflect.Ptr {
-			panic("target must be a pointer")
-		}
-		val.Elem().Set(reflect.ValueOf(target))
-	})
-
-	fmt.Printf("server instance %v\n", server)
-
 	err := container.Invoke(startServer)
 
 	if err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v\n", err))
 	}
+
+	log.Println("Shutdown Successful!")
 }

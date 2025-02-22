@@ -1,7 +1,7 @@
 package injection
 
 import (
-	"algoespresso_backend/bootstrap"
+	"algoespresso_backend/application/server"
 	"algoespresso_backend/core"
 	"algoespresso_backend/data/database"
 	"algoespresso_backend/data/repository/cache"
@@ -45,9 +45,13 @@ func Register() *dig.Container {
 			Interface:   new(repository.ICacheRepo),
 			Token:       "CacheRepo",
 		},
+		/*
+			- inject repositories
+			- inject controllers
+		*/
 		{
-			Constructor: bootstrap.NewServer,
-			Interface:   new(bootstrap.IServer),
+			Constructor: server.NewServer,
+			Interface:   new(server.IServer),
 			Token:       "Server",
 		},
 	}
