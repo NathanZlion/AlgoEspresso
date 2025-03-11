@@ -7,7 +7,7 @@ build:
 	@echo "Building..."
 	
 	
-	@go build -o main cmd/api/main.go
+	@go build -o ./bin/main cmd/api/main.go
 
 # Run the application
 run:
@@ -34,6 +34,7 @@ docker-down:
 test:
 	@echo "Testing..."
 	@go test ./... -v
+
 # Integrations Tests for the application
 itest:
 	@echo "Running integration tests..."
@@ -42,7 +43,8 @@ itest:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
-	@rm -f main
+	@rm -f ./bin/main
+	@rm -f -r ./tmp
 
 # Live Reload
 watch:
