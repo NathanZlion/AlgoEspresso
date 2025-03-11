@@ -1,0 +1,66 @@
+# BASE IMAGE alpine to make the image small
+# Bigger is not always better :)
+
+##### BUILD BASE #####
+FROM golang:1.24-alpine3.21 AS build-base
+
+WORKDIR /usr/src/app
+
+COPY go.mod go.sum ./
+
+# Use cache mount to speed up install of existing dependencies
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go mod download
+
+
+##### DEV #####
+
+# DEV branching for hot reload
+FROM build-base AS dev
+
+# additional deps for hot reload and inspecting in go
+# Use the same cache mount technique here for air & dlv
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go install github.com/air-verse/air@latest && \
+    go install github.com/go-delve/delve/cmd/dlv@latest
+
+# copy source code
+COPY . .
+
+CMD ["air", "-c", ".air.toml"]
+
+
+##### BUILD PROD #####
+
+FROM build-base AS build-prod
+
+# Non-root user for security
+# RUN useradd -u 1000 non-root
+
+COPY . .
+
+# compile main app
+RUN go build \
+    # -ldflags="-linkmode external -extldflags -static" \
+    -o ./bin/main cmd/api/main.go
+
+
+##### DEPLOYABLE IMAGE #####
+FROM scratch
+
+WORKDIR /bin
+
+# copy passwd files
+# COPY --from=build-prod /etc/passwd /etc/passwd
+
+# copy the app binary
+COPY --from=build-prod /usr/src/app/bin/main .
+
+# use a non root user
+# USER non-root
+
+EXPOSE 8080
+
+CMD [ "main" ]
