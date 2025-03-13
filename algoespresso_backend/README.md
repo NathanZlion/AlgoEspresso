@@ -1,6 +1,6 @@
 # Project algoespresso_backend
 
-One Paragraph of project description goes here
+Algoespresso Backend
 
 ## Getting Started
 

@@ -29,7 +29,6 @@ COPY --from=dev-deps /app/node_modules ./node_modules
 # copy source code
 COPY . .   
 
-
 RUN npm run build
 
 
@@ -44,7 +43,6 @@ COPY . .
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
-# RUN npm run dev
 
 
 #==== LINTER ====#
@@ -71,7 +69,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # install dependencies
-RUN --mount=type=cache,target=/root/.npm npm clean-install --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm clean-install --only=production
+# Install sharp to make nextjs image optimization possible
+RUN --mount=type=cache,target=/root/.npm npm clean-install npm i sharp
 
 
 #==== PROD BUILDER ====#

@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./bin/main"
-  cmd = "make build"
+  cmd = "go build -mod=vendor -o ./bin/main ./cmd/api/main.go && go build -mod=vendor -o ./bin/healthcheck ./cmd/healthcheck/healthcheck.go"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules"]
   exclude_file = []
@@ -36,7 +36,7 @@ tmp_dir = "tmp"
 
 [log]
   main_only = false
-  time = false
+  time = true
 
 [misc]
   clean_on_exit = false

@@ -1,0 +1,71 @@
+services:
+  nextjs-frontend:
+    image: nextjs_frontend
+    build:
+      context: algoespresso_frontend
+      dockerfile: dockerfile
+      target: dev
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/api/healthcheck"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+    depends_on:
+      golang-backend:
+        condition: service_healthy
+    networks:
+      - golang-next-net
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+  golang-backend:
+    image: golang-backend
+    build:
+      context: algoespresso_backend
+      dockerfile: dockerfile
+      target: dev
+    depends_on:
+      mongo-database:
+        condition: service_healthy
+    networks:
+      - golang-next-net
+      - golang-mongo-net
+    healthcheck:
+      test: [ "CMD", "/usr/src/app/bin/healthcheck" ]
+      interval: 30s
+      retries: 3
+      start_period: 15s
+      timeout: 5s
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+
+  mongo-database:
+    image: mongo
+    container_name: mongo-database
+    networks:
+      - golang-mongo-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      # echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 3s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - mongo_data:/data/db:rw
+    expose:
+      - 27017
+    restart: unless-stopped
+
+
+volumes:
+  mongo_data:
+
+
+networks:
+  golang-next-net:
+  golang-mongo-net:
+

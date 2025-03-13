@@ -1,8 +1,6 @@
 import axios from "axios";
 import { getAuthToken } from "./utils";
 
-console.log(process.env.NEXT_PUBLIC_BACKEND_URL)
-
 export const apiClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 })
