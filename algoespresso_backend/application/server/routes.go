@@ -8,13 +8,15 @@ import (
 )
 
 func (s *Server) HealthCheck(c *fiber.Ctx) bool {
-	// check db health
-	// check all service health
+	// TODO: check db health
+	// TODO: check all service health
+	fmt.Println("Health Check Called...")
 	return true
 }
 
 func (s *Server) ReadinessCheck(c *fiber.Ctx) bool {
 	// Check for readiness
+	fmt.Println("Readiness Check Called...")
 	return true
 }
 

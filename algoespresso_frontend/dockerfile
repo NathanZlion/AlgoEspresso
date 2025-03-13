@@ -1,0 +1,105 @@
+#### BASE ####
+FROM node:23-alpine3.20 AS base
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+
+#### INSTALL DEPENDENCIES ####
+FROM base AS dev-deps
+
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# copy package manager files
+COPY package.json package-lock.json ./
+
+# install dependencies
+RUN --mount=type=cache,target=/root/.npm npm clean-install
+
+
+#### BUILD ####
+FROM base AS dev-builder
+
+WORKDIR /app
+
+# copy installed dependencies
+COPY --from=dev-deps /app/node_modules ./node_modules
+
+# copy source code
+COPY . .   
+
+RUN npm run build
+
+
+#==== DEV ====#
+FROM base AS dev
+
+WORKDIR /app
+
+COPY --from=dev-builder /app/node_modules ./node_modules
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+
+
+#==== LINTER ====#
+FROM base AS linter
+
+WORKDIR /app
+
+
+# copy installed dependencies
+COPY --from=dev-deps /app/node_modules ./node_modules
+
+COPY . .
+
+RUN npm run lint
+
+
+FROM base AS prod-deps
+
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# copy package manager files
+COPY package.json package-lock.json ./
+
+# install dependencies
+RUN --mount=type=cache,target=/root/.npm npm clean-install --only=production
+# Install sharp to make nextjs image optimization possible
+RUN --mount=type=cache,target=/root/.npm npm clean-install npm i sharp
+
+
+#==== PROD BUILDER ====#
+FROM base AS prod-builder
+
+WORKDIR /app
+
+# copy installed dependencies
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY . .   
+
+RUN npm run build
+
+
+####  RUNNER : final image ####
+FROM base AS runner
+
+WORKDIR /app
+
+# create separate users for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# copy built files from the builer layer
+COPY --from=prod-builder --chown=nextjs:nodejs /app/.next/standalone ./.next/standalone
+
+USER nextjs
+
+EXPOSE 3000
+
+ENTRYPOINT ["node", "./.next/standalone/server.js"]

@@ -30,8 +30,9 @@ type NewServerDeps struct {
 func NewServer(deps NewServerDeps) *Server {
 	server := &Server{
 		App: fiber.New(fiber.Config{
-			ServerHeader: "algoespresso_backend",
-			AppName:      "algoespresso_backend",
+			ServerHeader:  "algoespresso_backend",
+			AppName:       "algoespresso_backend",
+			CaseSensitive: true,
 		}),
 	}
 

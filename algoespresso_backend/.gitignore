@@ -12,7 +12,7 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
 
 # Go workspace file
 go.work
@@ -26,7 +26,7 @@ tmp/
 .env
 
 # Project build
-main
+bin
 *templ.go
 
 # OS X generated file

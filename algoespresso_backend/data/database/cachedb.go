@@ -28,7 +28,7 @@ func (cache *CacheDB) Connect(params ConnectDbParams) error {
 
 	cache.Client = redis.NewClient(
 		&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", env.CacheDBHost, env.CacheDBPort),
+			Addr:     fmt.Sprintf("%s:%s", env.CacheDBHost, env.CacheDBPort),
 			Password: env.CacheDBPassword,
 			DB:       env.CacheDBDatabaseNumber,
 		},
