@@ -1,10 +1,17 @@
 
 BACKEND = algoespresso_backend
 FRONTEND = algoespresso_frontend
+TIME = $$(date +%Y_%m_%d_%H_%M_%S)
+LOGS_FOLDER = logs
 
 
 .PHONY: all
 all: build test
+
+
+.PHONY: time
+time:
+	@echo $(TIME)
 
 
 .PHONY: build
@@ -22,8 +29,8 @@ build: clean
 .PHONY: dev
 dev:
 	@echo "Creating container in dev mode..."
-	@docker compose -f "docker-compose-dev.yml" up 2>./logs/dev_$$(date +%Y_%m_%d_%H_%M_%S).log || \
- 	echo "Error: Docker Compose V2 failed. See logs/dev_$$(date +%Y%m%d%H%M%S).log for details.";
+	@docker compose -f "docker-compose-dev.yml" up 2> ./$(LOGS_FOLDER)/dev_$(TIME).log || \
+	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/dev_$(TIME).log for details.";
 
 
 .PHONY: clear-logs
@@ -66,6 +73,7 @@ clean:
 	rm -f -r $(BACKEND)/tmp
 	cd $(FRONTEND) && rm -rf .next
 	@echo "🧹 Cleanup Complete"
+
 
 .PHONY: help
 help:
