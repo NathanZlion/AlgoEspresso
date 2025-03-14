@@ -44,7 +44,9 @@ func (mongodbDatabase *Database) Connect(params ConnectDbParams) error {
 }
 
 func (mongodbDatabase *Database) Disconnect() {
-	mongodbDatabase.client.Disconnect(context.Background())
+	if err := mongodbDatabase.client.Disconnect(context.Background()); err != nil {
+		fmt.Println("Failed to release mongodb connection.")
+	}
 }
 
 func (mongodbDatabase *Database) Health() error {
