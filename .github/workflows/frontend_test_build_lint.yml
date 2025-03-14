@@ -39,6 +39,8 @@ jobs:
 
   build:
     name: Build Next.js App
+    env:
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
