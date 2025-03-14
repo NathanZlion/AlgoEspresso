@@ -13,7 +13,7 @@ import (
 type IDatabase interface {
 	Connect(params ConnectDbParams) error
 	Disconnect()
-	Health() bool
+	Health() error
 }
 
 // Interface Implementation
@@ -47,11 +47,17 @@ func (mongodbDatabase *Database) Disconnect() {
 	mongodbDatabase.client.Disconnect(context.Background())
 }
 
-func (mongodbDatabase *Database) Health() bool {
-	timeoutDuration := time.Second * 1
+func (mongodbDatabase *Database) Health() error {
+	fmt.Println("Pinging MongoDb")
+	timeoutDuration := time.Second * 3
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
-	err := mongodbDatabase.client.Ping(ctx, nil)
-	return err == nil
+	if err := mongodbDatabase.client.Ping(ctx, nil); err != nil {
+		fmt.Printf("Failed Pinging MongoDb %+v \n", err)
+		return err
+	}
+
+	fmt.Println("Pinging Mongo Success")
+	return nil
 }

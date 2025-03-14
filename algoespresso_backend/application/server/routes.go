@@ -1,44 +1,47 @@
 package server
 
 import (
+	"algoespresso_backend/core"
 	"algoespresso_backend/data/database"
 	"algoespresso_backend/injection"
 	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/dig"
 )
 
 func (s *Server) HealthCheck(c *fiber.Ctx) bool {
 	// TODO: check the health of the database, and cache
-
 	container := injection.Container
+
+	fmt.Println("Health Check Called")
+
 	if err := container.Invoke(pingCacheDb); err != nil {
+		fmt.Printf("Something Wrong with the Cache %+v\n", err)
 		return false
 	}
 
 	if err := container.Invoke(pingDatabase); err != nil {
+		fmt.Printf("Something Wrong with the Database %+v\n", err)
 		return false
 	}
 
 	return true
 }
 
-func pingCacheDb(
-	deps struct {
-		dig.In
-		cacheDb database.ICacheDB `name:"CacheDatabase"`
-	},
-) bool {
-	return deps.cacheDb.Health()
+type PingDeps struct {
+	dig.In
+	Database database.IDatabase `name:"Database"`
+	CacheDb  database.ICacheDB  `name:"CacheDb"`
+	Config   core.IConfig       `name:"Config"`
 }
 
-func pingDatabase(
-	deps struct {
-		dig.In
-		database database.Database `name:"Database"`
-	},
-) bool {
-	return deps.database.Health()
+func pingCacheDb(deps PingDeps) error {
+	return deps.CacheDb.Health()
+}
+
+func pingDatabase(deps PingDeps) error {
+	return deps.Database.Health()
 }
 
 func (s *Server) ReadinessCheck(c *fiber.Ctx) bool {

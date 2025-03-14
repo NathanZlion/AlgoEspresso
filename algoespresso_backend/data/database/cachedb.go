@@ -9,7 +9,9 @@ import (
 )
 
 type ICacheDB interface {
-	IDatabase
+	Connect(params ConnectDbParams) error
+	Disconnect()
+	Health() error
 }
 
 type CacheDB struct {
@@ -18,7 +20,6 @@ type CacheDB struct {
 
 // We need the config for the connection credentials and stuff
 func NewCacheDB() *CacheDB {
-
 	return &CacheDB{}
 }
 
@@ -34,6 +35,7 @@ func (cache *CacheDB) Connect(params ConnectDbParams) error {
 			DB:       env.CacheDBDatabaseNumber,
 		},
 	)
+	fmt.Printf("Redis Connection %v \n", cache.Client.ClientID(context.Background()))
 
 	if cache.Client == nil {
 		return fmt.Errorf("Cannot connect to redis server!")
@@ -47,12 +49,18 @@ func (cache *CacheDB) Disconnect() {
 	cache.Client.Close()
 }
 
-func (cache *CacheDB) Health() bool {
+func (cache *CacheDB) Health() error {
+	fmt.Println("Pinging Redis")
 	timeoutDuration := time.Second * 1
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
-	err := cache.Client.Ping(ctx)
-	return err == nil
+	if err := cache.Client.Ping(ctx).Err(); err != nil {
+		fmt.Printf("Failed Pinging Redis: err %+v \n", err)
+		return err
+	}
+
+	fmt.Println("Pinging Redis Success")
+	return nil
 
 }
