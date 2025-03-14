@@ -1,22 +1,51 @@
 package server
 
 import (
+	"algoespresso_backend/core"
+	"algoespresso_backend/data/database"
+	"algoespresso_backend/injection"
 	"fmt"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/dig"
 )
 
 func (s *Server) HealthCheck(c *fiber.Ctx) bool {
-	// TODO: check db health
-	// TODO: check all service health
-	fmt.Println("Health Check Called...")
+	// TODO: check the health of the database, and cache
+	container := injection.Container
+
+	fmt.Println("Health Check Called")
+
+	if err := container.Invoke(pingCacheDb); err != nil {
+		fmt.Printf("Something Wrong with the Cache %+v\n", err)
+		return false
+	}
+
+	if err := container.Invoke(pingDatabase); err != nil {
+		fmt.Printf("Something Wrong with the Database %+v\n", err)
+		return false
+	}
+
 	return true
+}
+
+type PingDeps struct {
+	dig.In
+	Database database.IDatabase `name:"Database"`
+	CacheDb  database.ICacheDB  `name:"CacheDb"`
+	Config   core.IConfig       `name:"Config"`
+}
+
+func pingCacheDb(deps PingDeps) error {
+	return deps.CacheDb.Health()
+}
+
+func pingDatabase(deps PingDeps) error {
+	return deps.Database.Health()
 }
 
 func (s *Server) ReadinessCheck(c *fiber.Ctx) bool {
 	// Check for readiness
-	fmt.Println("Readiness Check Called...")
 	return true
 }
 
@@ -37,12 +66,13 @@ func (s *Server) RegisterProblemsRoutes(router fiber.Router) {
 	// submit a solution
 	// TODO: block unauthorized users
 	specificProblemRouter.Post("/submit", func(ctx *fiber.Ctx) error {
-		id := ctx.Params("id")
-		var submittion Submittion
-		if err := ctx.BodyParser(&submittion); err != nil {
-			log.Println("Failed to parse body to solution")
-		}
+		return nil
+		// id := ctx.Params("id")
+		// var submittion Submittion
+		// if err := ctx.BodyParser(&submittion); err != nil {
+		// 	log.Println("Failed to parse body to solution")
+		// }
 
-		return ctx.SendString(fmt.Sprintf("Submit Solution For Problem With Id: %s Code: %s\n", id, submittion.Code))
+		// return ctx.SendString(fmt.Sprintf("Submit Solution For Problem With Id: %s Code: %s\n", id, submittion.Code))
 	})
 }

@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -10,8 +11,9 @@ import (
 )
 
 type IDatabase interface {
-	Connect(ConnectDbParams) error
-	Health() bool
+	Connect(params ConnectDbParams) error
+	Disconnect()
+	Health() error
 }
 
 // Interface Implementation
@@ -25,23 +27,37 @@ func NewDatabase() *Database {
 }
 
 func (mongodbDatabase *Database) Connect(params ConnectDbParams) error {
-	client, err := mongo.Connect(
-		context.Background(),
-		options.Client().ApplyURI(params.Config.GetEnv().MongoDBConnectionString),
-	)
+	fmt.Println("Trying to connect to database...")
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(params.Config.GetEnv().MongoDBConnectionString).SetServerAPIOptions(serverAPI)
+
+	client, err := mongo.Connect(context.Background(), opts)
 
 	if err != nil {
+		fmt.Printf("Cannot connect to Mongo server! %+v \n", err)
 		return err
 	}
+
 	mongodbDatabase.client = client
+	fmt.Println("Connected to MongoDb successfully")
 	return nil
 }
 
-func (mongodbDatabase *Database) Health() bool {
-	timeoutDuration := time.Second * 1
+func (mongodbDatabase *Database) Disconnect() {
+	mongodbDatabase.client.Disconnect(context.Background())
+}
+
+func (mongodbDatabase *Database) Health() error {
+	fmt.Println("Pinging MongoDb")
+	timeoutDuration := time.Second * 3
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
-	err := mongodbDatabase.client.Ping(ctx, nil)
-	return err == nil
+	if err := mongodbDatabase.client.Ping(ctx, nil); err != nil {
+		fmt.Printf("Failed Pinging MongoDb %+v \n", err)
+		return err
+	}
+
+	fmt.Println("Pinging Mongo Success")
+	return nil
 }

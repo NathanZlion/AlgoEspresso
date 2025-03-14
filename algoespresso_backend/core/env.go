@@ -11,11 +11,12 @@ import (
 type Env struct {
 	ServerPort              int
 	App_Env                 string
-	DBHost                 string
-	DBPort                 string
-	DBUsername             string
-	DBRootPassword        string
+	DBHost                  string
+	DBPort                  string
+	DBUsername              string
+	DBRootPassword          string
 	MongoDBConnectionString string
+	CacheDBUsername         string
 	CacheDBHost             string
 	CacheDBPort             string
 	CacheDBPassword         string
@@ -34,17 +35,18 @@ func NewEnv() Env {
 	}
 
 	return Env{
-		ServerPort:            port,
-		App_Env:               os.Getenv("APP_ENV"),
-		DBHost:               os.Getenv("DB_HOST"),
-		DBPort:               os.Getenv("DB_PORT"),
-		DBUsername:           os.Getenv("DB_USERNAME"),
-		DBRootPassword:      os.Getenv("DB_ROOT_PASSWORD"),
-		CacheDBHost:           os.Getenv("CACHE_DB_HOST"),
-		CacheDBPort:           os.Getenv("CACHE_DB_PORT"),
-		CacheDBPassword:       os.Getenv("CACHE_DB_PASSWORD"),
-		ClerkSecretKey:        os.Getenv("CLERK_SECRET_KEY"),
+		ServerPort:              port,
+		App_Env:                 os.Getenv("APP_ENV"),
+		DBHost:                  os.Getenv("DB_HOST"),
+		DBPort:                  os.Getenv("DB_PORT"),
+		DBUsername:              os.Getenv("DB_USERNAME"),
+		DBRootPassword:          os.Getenv("DB_ROOT_PASSWORD"),
+		CacheDBUsername:         os.Getenv("CACHE_DB_USERNAME"),
+		CacheDBHost:             os.Getenv("CACHE_DB_HOST"),
+		CacheDBPort:             os.Getenv("CACHE_DB_PORT"),
+		CacheDBPassword:         os.Getenv("CACHE_DB_PASSWORD"),
+		ClerkSecretKey:          os.Getenv("CLERK_SECRET_KEY"),
 		MongoDBConnectionString: os.Getenv("MONGO_CONNECTION_STRING"),
-		CacheDBDatabaseNumber: cacheDBDatabaseNumber,
+		CacheDBDatabaseNumber:   cacheDBDatabaseNumber,
 	}
 }

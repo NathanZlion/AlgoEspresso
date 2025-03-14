@@ -3,6 +3,7 @@ package main
 import (
 	"algoespresso_backend/application/server"
 	"algoespresso_backend/core"
+	"algoespresso_backend/data/database"
 	"algoespresso_backend/injection"
 	"context"
 	"fmt"
@@ -18,6 +19,34 @@ import (
 	"go.uber.org/dig"
 )
 
+type ServerStartDependencies struct {
+	dig.In
+	Config core.IConfig `name:"Config"`
+}
+
+func startAPIServer(deps ServerStartDependencies) {
+	// Register the handlers for the server
+	_server := server.NewServer()
+	clerkSecret := deps.Config.GetEnv().ClerkSecretKey
+	clerk.SetKey(clerkSecret)
+
+	// channel to signal when the shutdown is complete
+	shutdownComplete := make(chan bool, 1)
+
+	// start server listening on port
+	go func() {
+		port, _ := strconv.Atoi(os.Getenv(("PORT")))
+		if err := _server.Listen(fmt.Sprintf(":%d", port)); err != nil {
+			panic(fmt.Sprintf("Failed to start server %v\n", err))
+		}
+	}()
+
+	go gracefulShutdown(_server, shutdownComplete)
+
+	// wait for a graceful shutdown comlete to be sent through the channel
+	<-shutdownComplete
+}
+
 func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -31,7 +60,7 @@ func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 	defer cancel()
 
 	if err := server.ShutdownWithContext(ctx); err != nil {
-		log.Printf("Server forced to shutdown %v\n", err)
+		log.Printf("Server forced to shutdown after waiting for 5 seconds%v\n", err)
 	}
 
 	log.Println("Server shutdown complete signaled!")
@@ -39,40 +68,60 @@ func gracefulShutdown(server server.IServer, shutdownComplete chan bool) {
 	shutdownComplete <- true
 }
 
-type ServerStartDependencies struct {
+type CacheConnectionDeps struct {
 	dig.In
-	Server server.IServer `name:"Server"`
-	Config core.IConfig   `name:"Config"`
+	CacheDb database.ICacheDB `name:"CacheDb"`
+	Config  core.IConfig      `name:"Config"`
 }
 
-func startServer(deps ServerStartDependencies) {
-	// Register the handlers for the server
-	deps.Server.RegisterRoutes()
-	clerkSecret := deps.Config.GetEnv().ClerkSecretKey
-	clerk.SetKey(clerkSecret)
+func connectCache(deps CacheConnectionDeps) error {
+	cache := deps.CacheDb
+	return cache.Connect(
+		database.ConnectDbParams{
+			Config: deps.Config,
+		},
+	)
+}
 
-	// channel to signal when the shutdown is complete
-	shutdownComplete := make(chan bool, 1)
+func disconnectCache(deps CacheConnectionDeps) {
+	fmt.Println("===Releasing cache resource")
+	deps.CacheDb.Disconnect()
+}
 
-	// start server listening on port
-	go func() {
-		port, _ := strconv.Atoi(os.Getenv(("PORT")))
-		if err := deps.Server.Listen(fmt.Sprintf(":%d", port)); err != nil {
-			panic(fmt.Sprintf("Failed to start server %v\n", err))
-		}
-	}()
+type DatabaseConnectionDeps struct {
+	dig.In
+	Database database.IDatabase `name:"Database"`
+	Config   core.IConfig       `name:"Config"`
+}
 
-	go gracefulShutdown(deps.Server, shutdownComplete)
+func connectDatabase(deps DatabaseConnectionDeps) error {
+	db := deps.Database
+	return db.Connect(
+		database.ConnectDbParams{
+			Config: deps.Config,
+		},
+	)
+}
 
-	// wait for a graceful shutdown comlete to be sent through the channel
-	<-shutdownComplete
+func disconnectDatabase(deps DatabaseConnectionDeps) {
+	fmt.Println("===Releasing Database resource")
+	deps.Database.Disconnect()
 }
 
 func main() {
-	container := injection.Register()
-	err := container.Invoke(startServer)
+	container := injection.Container
 
-	if err != nil {
+	defer container.Invoke(disconnectDatabase)
+	if err := container.Invoke(connectDatabase); err != nil {
+		panic(fmt.Sprintf("Failed to connect to database: %v\n", err))
+	}
+
+	defer container.Invoke(disconnectCache)
+	if err := container.Invoke(connectCache); err != nil {
+		panic(fmt.Sprintf("Failed to connect to cache server: %v\n", err))
+	}
+
+	if err := container.Invoke(startAPIServer); err != nil {
 		panic(fmt.Sprintf("Failed to start server: %v\n", err))
 	}
 

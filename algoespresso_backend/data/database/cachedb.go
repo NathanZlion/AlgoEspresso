@@ -1,7 +1,6 @@
 package database
 
 import (
-	"algoespresso_backend/core"
 	"context"
 	"fmt"
 	"time"
@@ -10,7 +9,9 @@ import (
 )
 
 type ICacheDB interface {
-	IDatabase
+	Connect(params ConnectDbParams) error
+	Disconnect()
+	Health() error
 }
 
 type CacheDB struct {
@@ -18,31 +19,48 @@ type CacheDB struct {
 }
 
 // We need the config for the connection credentials and stuff
-func NewCacheDB(config core.Config) *CacheDB {
-
+func NewCacheDB() *CacheDB {
 	return &CacheDB{}
 }
 
 func (cache *CacheDB) Connect(params ConnectDbParams) error {
+	fmt.Println("Trying to connect to redis...")
 	env := params.Config.GetEnv()
 
 	cache.Client = redis.NewClient(
 		&redis.Options{
+			Username: env.CacheDBUsername,
 			Addr:     fmt.Sprintf("%s:%s", env.CacheDBHost, env.CacheDBPort),
 			Password: env.CacheDBPassword,
 			DB:       env.CacheDBDatabaseNumber,
 		},
 	)
+	fmt.Printf("Redis Connection %v \n", cache.Client.ClientID(context.Background()))
 
+	if cache.Client == nil {
+		return fmt.Errorf("Cannot connect to redis server!")
+	}
+
+	fmt.Println("Connected to Redis successfully")
 	return nil
 }
 
-func (cache *CacheDB) Health() bool {
+func (cache *CacheDB) Disconnect() {
+	cache.Client.Close()
+}
+
+func (cache *CacheDB) Health() error {
+	fmt.Println("Pinging Redis")
 	timeoutDuration := time.Second * 1
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
-	err := cache.Client.Ping(ctx)
-	return err == nil
+	if err := cache.Client.Ping(ctx).Err(); err != nil {
+		fmt.Printf("Failed Pinging Redis: err %+v \n", err)
+		return err
+	}
+
+	fmt.Println("Pinging Redis Success")
+	return nil
 
 }

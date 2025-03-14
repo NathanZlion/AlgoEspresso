@@ -1,6 +1,8 @@
 
 BACKEND = algoespresso_backend
 FRONTEND = algoespresso_frontend
+TIME = $$(date +%Y_%m_%d_%H_%M_%S)
+LOGS_FOLDER = logs
 
 
 .PHONY: all
@@ -22,8 +24,8 @@ build: clean
 .PHONY: dev
 dev:
 	@echo "Creating container in dev mode..."
-	@docker compose -f "docker-compose-dev.yml" up 2>./logs/dev_$$(date +%Y_%m_%d_%H_%M_%S).log || \
- 	echo "Error: Docker Compose V2 failed. See logs/dev_$$(date +%Y%m%d%H%M%S).log for details.";
+	@docker compose -f "docker-compose-dev.yml" up 2> ./$(LOGS_FOLDER)/dev_$(TIME).log || \
+	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/dev_$(TIME).log for details.";
 
 
 .PHONY: clear-logs
@@ -48,6 +50,22 @@ down:
 lint:
 	@echo "Linting Project..."
 	@cd $(FRONTEND) && npm run lint
+	@echo "=== Completed Linting Frontend"
+
+	@if command -v golangci-lint > /dev/null; then \
+		echo "Linting Backend..."; \
+		cd $(BACKEND) && golangci-lint run ./...; \
+		echo "=== Completed Linting Backend"; \
+	else \
+		read -p "golangci-lint is not installed on your maching 😔. Do you want to install it? [Y/n]" concent; \
+		if [ "$$concent" != "n" ] && [ "$$concent" != "N" ]; then \
+			go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+			cd $(BACKEND) && golangci-lint run ./...; \
+			echo "=== Completed Linting Backend"; \
+		else \
+			echo "You chose not to install golangci-lint. Exiting backend linting..."; \
+		fi; \
+	fi
 	@echo "✔ Completed Linting"
 
 
@@ -67,6 +85,7 @@ clean:
 	cd $(FRONTEND) && rm -rf .next
 	@echo "🧹 Cleanup Complete"
 
+
 .PHONY: help
 help:
 	@echo "=========================="
@@ -76,19 +95,19 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all       - Build and test the project"
-	@echo "  build     - Build the project"
-	@echo "  dev       - Run the project in development mode"
-	@echo "  clear-logs- Clear logs created by the dev target"
-	@echo "  down      - Shut down the development containers"
-	@echo "  lint      - Lint the project"
-	@echo "  test      - Run tests"
-	@echo "  clean     - Clean the project, removing temporary and binary files"
-	@echo "  help      - Show this help message"
+	@echo "  all        - Build and test the project"
+	@echo "  build      - Build the project"
+	@echo "  dev        - Run the project in development mode"
+	@echo "  clear-logs - Clear logs created by the dev target"
+	@echo "  down       - Shut down the development containers"
+	@echo "  lint       - Lint the project"
+	@echo "  test       - Run tests"
+	@echo "  clean      - Clean the project, removing temporary and binary files"
+	@echo "  help       - Show this help message"
 	@echo ""
 	@echo "Variables:"
-	@echo "  BACKEND   - The backend directory"
-	@echo "  FRONTEND  - The frontend directory"
+	@echo "  BACKEND    - The backend directory"
+	@echo "  FRONTEND   - The frontend directory"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make build"

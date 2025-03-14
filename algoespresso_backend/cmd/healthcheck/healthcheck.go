@@ -9,14 +9,14 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-func healthCheck(url string) bool {
+func healthCheckAPICall(url string) bool {
 	resp, err := http.Get(url)
 	fmt.Printf("Pinging url %v ...\n", url)
 
 	return err == nil && resp.StatusCode == http.StatusOK
 }
 
-func readinessCheck(url string) bool {
+func readinessCheckAPICall(url string) bool {
 	resp, err := http.Get(url)
 	fmt.Printf("Pinging url %v ...\n", url)
 
@@ -31,7 +31,7 @@ func main() {
 
 	healthurl := fmt.Sprintf("http://localhost:%v/health-check", port)
 	readinessurl := fmt.Sprintf("http://localhost:%v/readiness-check", port)
-	if healthCheck(healthurl) && readinessCheck(readinessurl) {
+	if healthCheckAPICall(healthurl) && readinessCheckAPICall(readinessurl) {
 		fmt.Printf("System Healthy!! \n")
 		os.Exit(0)
 	} else {
