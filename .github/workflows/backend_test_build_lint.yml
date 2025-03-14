@@ -32,11 +32,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - run: cd algoespresso_backend
       - name: Lint Code
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.64
+          working-directory: algoespresso_backend
 
   build:
     name: Build Go Backend Code
