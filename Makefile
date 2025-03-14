@@ -9,11 +9,6 @@ LOGS_FOLDER = logs
 all: build test
 
 
-.PHONY: time
-time:
-	@echo $(TIME)
-
-
 .PHONY: build
 build: clean
 	@echo "Building Backend..."
@@ -55,6 +50,22 @@ down:
 lint:
 	@echo "Linting Project..."
 	@cd $(FRONTEND) && npm run lint
+	@echo "=== Completed Linting Frontend"
+
+	@if command -v golangci-lint > /dev/null; then \
+		echo "Linting Backend..."; \
+		cd $(BACKEND) && golangci-lint run ./...; \
+		echo "=== Completed Linting Backend"; \
+	else \
+		read -p "golangci-lint is not installed on your maching 😔. Do you want to install it? [Y/n]" concent; \
+		if [ "$$concent" != "n" ] && [ "$$concent" != "N" ]; then \
+			go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; \
+			cd $(BACKEND) && golangci-lint run ./...; \
+			echo "=== Completed Linting Backend"; \
+		else \
+			echo "You chose not to install golangci-lint. Exiting backend linting..."; \
+		fi; \
+	fi
 	@echo "✔ Completed Linting"
 
 
@@ -84,19 +95,19 @@ help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all       - Build and test the project"
-	@echo "  build     - Build the project"
-	@echo "  dev       - Run the project in development mode"
-	@echo "  clear-logs- Clear logs created by the dev target"
-	@echo "  down      - Shut down the development containers"
-	@echo "  lint      - Lint the project"
-	@echo "  test      - Run tests"
-	@echo "  clean     - Clean the project, removing temporary and binary files"
-	@echo "  help      - Show this help message"
+	@echo "  all        - Build and test the project"
+	@echo "  build      - Build the project"
+	@echo "  dev        - Run the project in development mode"
+	@echo "  clear-logs - Clear logs created by the dev target"
+	@echo "  down       - Shut down the development containers"
+	@echo "  lint       - Lint the project"
+	@echo "  test       - Run tests"
+	@echo "  clean      - Clean the project, removing temporary and binary files"
+	@echo "  help       - Show this help message"
 	@echo ""
 	@echo "Variables:"
-	@echo "  BACKEND   - The backend directory"
-	@echo "  FRONTEND  - The frontend directory"
+	@echo "  BACKEND    - The backend directory"
+	@echo "  FRONTEND   - The frontend directory"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make build"
