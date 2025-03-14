@@ -1,4 +1,4 @@
-name: nextjs-build
+name: frontend_workflow
 on:
   push:
     branches:
@@ -31,6 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - run: npm run install
       - name: Run Tests
         run: npm run test
 
@@ -58,6 +59,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Build App
+      - run: npm run install
         run: npm run build
 
   lint:
@@ -83,5 +85,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - run: npm run install
       - name: Lint App
         run: npm run lint
