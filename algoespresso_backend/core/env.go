@@ -25,13 +25,14 @@ type Env struct {
 }
 
 func NewEnv() Env {
-	var err error
-
 	port, err := strconv.Atoi(os.Getenv("PORT"))
-	cacheDBDatabaseNumber, err := strconv.Atoi(os.Getenv("CACHE_DB_DATABASE_NUMBER"))
-
 	if err != nil {
-		panic(fmt.Sprintf("Failed to read variables from environment: %v", err))
+		panic(fmt.Sprintf("Failed to read Port from environment: %v", err))
+	}
+
+	cacheDBDatabaseNumber, err := strconv.Atoi(os.Getenv("CACHE_DB_DATABASE_NUMBER"))
+	if err != nil {
+		panic(fmt.Sprintf("Failed to read cacheDbDatabaseNumber from environment: %v", err))
 	}
 
 	return Env{

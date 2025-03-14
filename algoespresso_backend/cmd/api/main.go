@@ -111,12 +111,22 @@ func disconnectDatabase(deps DatabaseConnectionDeps) {
 func main() {
 	container := injection.Container
 
-	defer container.Invoke(disconnectDatabase)
+	defer func() {
+		err := container.Invoke(disconnectDatabase)
+		if err != nil {
+			fmt.Printf("Failed to disconnect database \n")
+		}
+	}()
 	if err := container.Invoke(connectDatabase); err != nil {
 		panic(fmt.Sprintf("Failed to connect to database: %v\n", err))
 	}
 
-	defer container.Invoke(disconnectCache)
+	defer func() {
+		err := container.Invoke(disconnectCache)
+		if err != nil {
+			fmt.Printf("Failed to disconnect Cache \n")
+		}
+	}()
 	if err := container.Invoke(connectCache); err != nil {
 		panic(fmt.Sprintf("Failed to connect to cache server: %v\n", err))
 	}
