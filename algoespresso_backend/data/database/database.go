@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -10,7 +11,8 @@ import (
 )
 
 type IDatabase interface {
-	Connect(ConnectDbParams) error
+	Connect(params ConnectDbParams) error
+	Disconnect()
 	Health() bool
 }
 
@@ -25,16 +27,24 @@ func NewDatabase() *Database {
 }
 
 func (mongodbDatabase *Database) Connect(params ConnectDbParams) error {
-	client, err := mongo.Connect(
-		context.Background(),
-		options.Client().ApplyURI(params.Config.GetEnv().MongoDBConnectionString),
-	)
+	fmt.Println("Trying to connect to database...")
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(params.Config.GetEnv().MongoDBConnectionString).SetServerAPIOptions(serverAPI)
+
+	client, err := mongo.Connect(context.Background(), opts)
 
 	if err != nil {
+		fmt.Printf("Cannot connect to Mongo server! %+v \n", err)
 		return err
 	}
+
 	mongodbDatabase.client = client
+	fmt.Println("Connected to MongoDb successfully")
 	return nil
+}
+
+func (mongodbDatabase *Database) Disconnect() {
+	mongodbDatabase.client.Disconnect(context.Background())
 }
 
 func (mongodbDatabase *Database) Health() bool {

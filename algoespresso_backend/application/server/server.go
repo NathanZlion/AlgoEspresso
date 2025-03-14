@@ -10,7 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"go.uber.org/dig"
 )
 
 type IServer interface {
@@ -23,11 +22,7 @@ type Server struct {
 	*fiber.App
 }
 
-type NewServerDeps struct {
-	dig.In
-}
-
-func NewServer(deps NewServerDeps) *Server {
+func NewServer() *Server {
 	server := &Server{
 		App: fiber.New(fiber.Config{
 			ServerHeader:  "algoespresso_backend",
@@ -36,12 +31,8 @@ func NewServer(deps NewServerDeps) *Server {
 		}),
 	}
 
-	return server
-}
-
-func (s *Server) RegisterRoutes() {
 	// Apply CORS middleware
-	s.App.Use(cors.New(cors.Config{
+	server.App.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
 		AllowHeaders:     "Accept,Authorization,Content-Type",
@@ -49,21 +40,27 @@ func (s *Server) RegisterRoutes() {
 		MaxAge:           300,
 	}))
 
-	s.App.Use(helmet.New())
+	server.App.Use(helmet.New())
 
 	// logger
-	s.App.Use(requestid.New())
-	s.App.Use(logger.New(logger.Config{
+	server.App.Use(requestid.New())
+	server.App.Use(logger.New(logger.Config{
 		Format:        "[${ip}]:${port} ${status} - ${method} ${path} request id: ${locals:requestid}\n",
 		DisableColors: false,
 	}))
 
-	s.App.Use(healthcheck.New(healthcheck.Config{
+	server.App.Use(healthcheck.New(healthcheck.Config{
 		LivenessEndpoint:  "/health-check",
-		LivenessProbe:     s.HealthCheck,
+		LivenessProbe:     server.HealthCheck,
 		ReadinessEndpoint: "/readiness-check",
-		ReadinessProbe:    s.ReadinessCheck,
+		ReadinessProbe:    server.ReadinessCheck,
 	}))
+
+	server.RegisterRoutes()
+	return server
+}
+
+func (s *Server) RegisterRoutes() {
 
 	v1 := s.App.Group("/api/v1", func(c *fiber.Ctx) error {
 		c.Set("Version", "v1")
@@ -73,12 +70,4 @@ func (s *Server) RegisterRoutes() {
 	v1.Use(middleware.WithHeaderAuthorization)
 
 	s.RegisterProblemsRoutes(v1)
-
-	// webhook := s.App.Group("/webhook", func(c *fiber.Ctx) error {
-	// 	return c.Next()
-	// })
-}
-
-type Submittion struct {
-	Code string `json:"code" xml:"code" form:"code"`
 }
