@@ -1,7 +1,7 @@
 package injection
 
 import (
-	"algoespresso_backend/application/server"
+	// "algoespresso_backend/application/server"
 	"algoespresso_backend/core"
 	"algoespresso_backend/data/database"
 	"algoespresso_backend/data/repository/cache"
@@ -49,11 +49,6 @@ func Register() *dig.Container {
 			- inject repositories
 			- inject controllers
 		*/
-		{
-			Constructor: server.NewServer,
-			Interface:   new(server.IServer),
-			Token:       "Server",
-		},
 	}
 
 	// register the services
@@ -70,3 +65,5 @@ func Register() *dig.Container {
 	log.Print("Completed registering dependencies ✅")
 	return container
 }
+
+var Container = Register()
