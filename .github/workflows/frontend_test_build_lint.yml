@@ -31,7 +31,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm run install
+      - name: Install Dependencies
+        run: npm install
+
       - name: Run Tests
         run: npm run test
 
@@ -59,8 +61,9 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Build App
-      - run: npm run install
-        run: npm run build
+        run: |
+          npm install
+          npm run build
 
   lint:
     name: Lint Next.js App
@@ -85,6 +88,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - run: npm run install
+      - name: Install Dependencies
+        run: npm install
+
       - name: Lint App
         run: npm run lint
