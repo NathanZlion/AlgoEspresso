@@ -24,7 +24,7 @@ build: clean
 .PHONY: dev
 dev:
 	@echo "Creating container in dev mode..."
-	@docker compose -f "docker-compose-dev.yml" up 2> ./$(LOGS_FOLDER)/dev_$(TIME).log || \
+	@docker compose -f "docker-compose-dev.yml" up --watch 2> ./$(LOGS_FOLDER)/dev_$(TIME).log || \
 	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/dev_$(TIME).log for details.";
 
 
@@ -97,9 +97,9 @@ help:
 	@echo "Targets:"
 	@echo "  all        - Build and test the project"
 	@echo "  build      - Build the project"
-	@echo "  dev        - Run the project in development mode"
+	@echo "  dev        - Run the project in development; watch mode"
 	@echo "  clear-logs - Clear logs created by the dev target"
-	@echo "  down       - Shut down the development containers"
+	@echo "  down       - Down the development containers"
 	@echo "  lint       - Lint the project"
 	@echo "  test       - Run tests"
 	@echo "  clean      - Clean the project, removing temporary and binary files"

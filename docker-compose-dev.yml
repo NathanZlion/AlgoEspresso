@@ -15,6 +15,15 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./algoespresso_frontend
+          target: /app
+          ignore:
+            - .next
+            - .clerk
+
     networks:
       - backend-frontend-net
     ports:
