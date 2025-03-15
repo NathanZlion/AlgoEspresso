@@ -69,7 +69,7 @@ export const MacbookScroll = ({
     return (
         <div
             ref={ref}
-            className="min-h-[140vh] flex flex-col items-center py-0 md:pb-40 md:py-32 justify-start flex-shrink-0 [perspective:800px] transform md:scale-100  scale-[0.35] sm:scale-50 w-full"
+            className="min-h-[140vh] flex flex-col items-center py-0 md:pb-40 md:py-32 justify-start flex-shrink-0 [perspective:800px] transform md:scale-100  scale-[0.55] sm:scale-75 w-full"
         >
             <motion.h2
                 style={{
@@ -112,7 +112,7 @@ export const MacbookScroll = ({
                 <Trackpad />
                 <div className="h-2 w-20 mx-auto inset-x-0 absolute bottom-0 bg-gradient-to-t from-[#272729] to-[#050505] rounded-tr-3xl rounded-tl-3xl" />
                 {showGradient && (
-                    <div className="h-40 w-full absolute bottom-0 inset-x-0 bg-gradient-to-t dark:from-black from-white via-white dark:via-black to-transparent z-50"></div>
+                    <div className="h-40 w-full absolute bottom-0 inset-x-0 bg-gradient-to-t dark:from-black from-white via-dark/10 dark:via-black to-transparent z-50"></div>
                 )}
                 {badge && <div className="absolute bottom-4 left-4">{badge}</div>}
             </div>
