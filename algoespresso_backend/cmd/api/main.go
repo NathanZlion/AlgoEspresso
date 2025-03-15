@@ -124,7 +124,7 @@ func main() {
 	defer func() {
 		err := container.Invoke(disconnectCache)
 		if err != nil {
-			fmt.Printf("Failed to disconnect Cache \n")
+			fmt.Printf("Failed to disconnect Cache... \n")
 		}
 	}()
 	if err := container.Invoke(connectCache); err != nil {
