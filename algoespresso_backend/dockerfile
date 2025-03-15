@@ -18,7 +18,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # DEV branching for hot reload
 FROM build-base AS dev
 
-# somehow get the downloaded binaries from the build-base to make sure that 
+# TODO: somehow get the downloaded binaries from the build-base to make sure that the binaries are available
+# and not downloaded again
 
 # additional deps for hot reload and inspecting in go
 # Use the same cache mount technique here for air & dlv
@@ -30,7 +31,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # copy source code
 COPY . .
 
-CMD ["air", "-c", ".air.toml"]
+CMD ["air"]
 
 
 ##### BUILD PROD #####

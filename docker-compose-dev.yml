@@ -15,6 +15,15 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./algoespresso_frontend
+          target: /app
+          ignore:
+            - .next
+            - .clerk
+
     networks:
       - backend-frontend-net
     ports:
@@ -34,8 +43,13 @@ services:
       test: [ "CMD", "/usr/src/app/bin/healthcheck" ]
       interval: 30s
       retries: 3
-      start_period: 15s
+      start_period: 5s
       timeout: 5s
+    develop:
+      watch:
+        - action: sync
+          path: ./algoespresso_backend
+          target: /usr/src/app
     ports:
       - 8080:8080
     restart: unless-stopped

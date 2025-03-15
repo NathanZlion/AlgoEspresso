@@ -42,18 +42,19 @@ func NewServer() *Server {
 
 	server.App.Use(helmet.New())
 
-	// logger
-	server.App.Use(requestid.New())
-	server.App.Use(logger.New(logger.Config{
-		Format:        "[${ip}]:${port} ${status} - ${method} ${path} request id: ${locals:requestid}\n",
-		DisableColors: false,
-	}))
-
+	// Health check
 	server.App.Use(healthcheck.New(healthcheck.Config{
 		LivenessEndpoint:  "/health-check",
 		LivenessProbe:     server.HealthCheck,
 		ReadinessEndpoint: "/readiness-check",
 		ReadinessProbe:    server.ReadinessCheck,
+	}))
+
+	// logger
+	server.App.Use(requestid.New())
+	server.App.Use(logger.New(logger.Config{
+		Format:        "[${ip}]:${port} ${status} - ${method} ${path} request id: ${locals:requestid}\n",
+		DisableColors: false,
 	}))
 
 	server.RegisterRoutes()

@@ -14,8 +14,6 @@ func (s *Server) HealthCheck(c *fiber.Ctx) bool {
 	// TODO: check the health of the database, and cache
 	container := injection.Container
 
-	fmt.Println("Health Check Called")
-
 	if err := container.Invoke(pingCacheDb); err != nil {
 		fmt.Printf("Something Wrong with the Cache %+v\n", err)
 		return false

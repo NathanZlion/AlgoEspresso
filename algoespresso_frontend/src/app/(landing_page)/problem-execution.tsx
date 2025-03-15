@@ -1,6 +1,9 @@
+"use client"
+
 import { CodeBlock } from "@/components/code-block";
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import Marquee from "@/components/marquee";
+import Image from "next/image";
 
 
 export default function ProblemSolving() {
@@ -53,7 +56,7 @@ export default function ProblemSolving() {
                 </div>
             </div>
 
-            <div className="relative bottom-0 row-span-2 h-full w-full overflow-hidden bg-muted items-center flex py-3
+            <div className="relative bottom-0 row-span-2 h-full w-full overflow-hidden bg-muted items-center flex
                 before:absolute before:content-[''] before:inset-y-0 before:left-0 before:w-32 before:z-[1]
                 before:bg-gradient-to-r before:from-black before:to-transparent before:pointer-events-none
                 after:absolute after:content-[''] after:inset-y-0 after:right-0 after:w-32 after:z-[1]
@@ -78,72 +81,25 @@ const images = [
     "/elixir.svg",
 ];
 
-const getRandomSpeed = () => ({
-    speed: 10 + Math.random() * 15,
-});
-
 const FlowingImages = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [dimensions, setDimensions] = useState({ width: 800, height: 50 });
-    const [positions, setPositions] = useState(
-        images.map((_, index) => ({
-            x: (index / images.length) * dimensions.width,
-            y: dimensions.height / 2,
-            ...getRandomSpeed(),
-            phase: Math.random() * Math.PI * 2,
-        }))
-    );
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-
-        const observer = new ResizeObserver(([entry]) => {
-            if (!entry.contentRect) return;
-            const { width, height } = entry.contentRect;
-            setDimensions({ width, height });
-
-            setPositions(
-                images.map((_, index) => ({
-                    x: (index / images.length) * width,
-                    y: height / 2, // Keep images in center vertically
-                    ...getRandomSpeed(),
-                    phase: Math.random() * Math.PI * 2,
-                }))
-            );
-        });
-
-        observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-        const updatePositions = () => {
-            setPositions((prev) =>
-                prev.map((pos) => {
-                    let newX = pos.x + pos.speed * 0.016;
-
-                    if (newX > dimensions.width) newX = -100;
-
-                    return { ...pos, x: newX, y: dimensions.height / 2 };
-                })
-            );
-        };
-
-        const interval = setInterval(updatePositions, 16);
-        return () => clearInterval(interval);
-    }, [dimensions]);
-
     return (
         <div ref={containerRef} className="w-full h-[50px] overflow-hidden flex items-center shadow ">
-            {images.map((src, i) => (
-                <motion.img
-                    key={i}
-                    src={src}
-                    className="absolute w-10 h-10"
-                    animate={{ x: positions[i].x }}
-                    transition={{ ease: "linear", duration: 0.016 }}
-                />
-            ))}
+
+            <Marquee
+                direction={"right"}
+                loop={0}
+                delay={13}
+                pauseOnHover
+                className="w-full outline h-full"
+                gradient
+            >
+                {images.map((src, i) => (
+                    <div key={`child-${i}`} className="mx-12">
+                        <Image src={src} width={40} height={40} alt={"Code Language Icon"} />
+                    </div>
+                ))}
+            </Marquee>
         </div>
     );
 };

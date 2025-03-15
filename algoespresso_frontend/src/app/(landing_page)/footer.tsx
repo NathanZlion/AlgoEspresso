@@ -11,7 +11,7 @@ const FooterSection = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLEle
     ({ className, ...props }, ref) => {
         return (
             <footer
-                className={cn("bg-accent/45 rounded-xl flex flex-col gap-10", className)}
+                className={cn("bg-background text-accent-foreground rounded-xl flex flex-col gap-10", className)}
                 ref={ref}
                 {...props}
             >

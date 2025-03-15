@@ -44,7 +44,7 @@ function useCycledIndex(totalItems: number, intervalDuration: number): number {
 function AnimatedGridSection({ activeIndex }: { activeIndex: number }) {
     return (
         <motion.section
-            className="grid grid-cols-3 w-full items-center min-h-screen relative overflow-hidden bg-background/30"
+            className="grid grid-cols-2 w-full items-center min-h-screen relative overflow-hidden bg-gradient-to-b from-chart-3/10 from-10% via-chart-3/60 to-chart-3/10 outline"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -53,7 +53,6 @@ function AnimatedGridSection({ activeIndex }: { activeIndex: number }) {
                 items={LEFT_ITEMS}
                 activeIndex={activeIndex}
                 startIndex={0}
-                gradient="bg-gradient-to-r from-purple-400 to-pink-600"
                 alignment="right"
                 background="bg-gradient-to-r from-background via-background/90 to-transparent"
             />
@@ -64,7 +63,6 @@ function AnimatedGridSection({ activeIndex }: { activeIndex: number }) {
                 items={RIGHT_ITEMS}
                 activeIndex={activeIndex}
                 startIndex={LEFT_ITEMS.length}
-                gradient="bg-gradient-to-r from-purple-400 to-pink-600"
                 alignment="left"
                 background="bg-gradient-to-r from-transparent via-background/10 to-background"
             />
@@ -77,14 +75,12 @@ function AnimatedColumn({
     items,
     activeIndex,
     startIndex,
-    gradient,
     alignment,
     background,
 }: {
     items: string[];
     activeIndex: number;
     startIndex: number;
-    gradient: string;
     alignment: "left" | "right";
     background: string;
 }) {
@@ -96,7 +92,6 @@ function AnimatedColumn({
                         <AnimatedText
                             key={item}
                             text={item}
-                            gradient={gradient}
                             alignment={alignment}
                         />
                     )
@@ -106,7 +101,7 @@ function AnimatedColumn({
     );
 }
 
-function AnimatedText({ text, gradient, alignment }: { text: string; gradient: string; alignment: "left" | "right" }) {
+function AnimatedText({ text, alignment }: { text: string; alignment: "left" | "right" }) {
     return (
         <motion.div
             initial={{ x: alignment === "right" ? -100 : 100, opacity: 0 }}
@@ -115,7 +110,7 @@ function AnimatedText({ text, gradient, alignment }: { text: string; gradient: s
             transition={{ type: "spring", stiffness: 100 }}
             className={`absolute ${alignment === "right" ? "right-0 text-right" : "left-0"}`}
         >
-            <h2 className={`lg:text-7xl font-bold ${gradient} bg-clip-text text-transparent`}>
+            <h2 className={`lg:text-7xl font-bold`}>
                 {text}
             </h2>
         </motion.div>
@@ -126,7 +121,7 @@ function AnimatedText({ text, gradient, alignment }: { text: string; gradient: s
 function DotGridAnimation() {
     return (
         <motion.div
-            className="h-full w-full hidden lg:flex items-center justify-center relative overflow-hidden"
+            className="absolute mx-auto h-full w-full hidden lg:flex items-center justify-center overflow-hidden outline"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -135,7 +130,7 @@ function DotGridAnimation() {
                 {Array.from({ length: 64 }).map((_, index) => (
                     <motion.div
                         key={index}
-                        className="w-1 h-1 bg-white/20 rounded-full"
+                        className="w-1 h-1 bg-foreground/20 rounded-full"
                         animate={{
                             scale: [1, 1.5, 1],
                             opacity: [0.2, 0.8, 0.2],
