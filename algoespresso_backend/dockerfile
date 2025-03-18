@@ -38,29 +38,35 @@ CMD ["air"]
 
 FROM build-base AS build-prod
 
-# Non-root user for security
-# RUN useradd -u 1000 non-root
+WORKDIR /usr/src/app
 
 COPY . .
 
 # compile main app
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go -mod=vendor build -o ./bin/main cmd/api/main.go
-
+    go build -mod=vendor -o ./bin/main cmd/api/main.go && \
+    go build -mod=vendor -o ./bin/healthcheck cmd/healthcheck/healthcheck.go
+    
 ##### DEPLOYABLE IMAGE #####
-FROM scratch
-# FROM alpine:3.21.3 AS prod
+# FROM scratch AS runner
+FROM alpine:3.21.3 AS runner
+    
+WORKDIR /usr/src/app
 
 # copy passwd files
-# COPY --from=build-prod /etc/passwd /etc/passwd
+COPY --from=build-prod /etc/passwd /etc/passwd
 
 # copy the app binary
-COPY --from=build-prod /usr/src/app/bin/main .
+COPY --from=build-prod /usr/src/app/bin/main main
+COPY --from=build-prod /usr/src/app/bin/healthcheck healthcheck
 
-# use a non root user
-# USER non-root
+# Create a group and user
+RUN addgroup -S appgroup && adduser -S non-root -G appgroup
+
+# Tell docker that all future commands should run as the appuser user
+USER non-root
 
 EXPOSE 8080
 
-CMD [ "main" ]
+CMD ["sh", "-c", "./main"]

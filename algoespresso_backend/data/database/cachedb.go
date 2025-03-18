@@ -50,17 +50,13 @@ func (cache *CacheDB) Disconnect() {
 }
 
 func (cache *CacheDB) Health() error {
-	fmt.Println("Pinging Redis")
 	timeoutDuration := time.Second * 1
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
 	if err := cache.Client.Ping(ctx).Err(); err != nil {
-		fmt.Printf("Failed Pinging Redis: err %+v \n", err)
 		return err
 	}
 
-	fmt.Println("Pinging Redis Success")
 	return nil
-
 }
