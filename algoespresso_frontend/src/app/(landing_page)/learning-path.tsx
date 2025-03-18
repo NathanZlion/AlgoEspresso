@@ -44,7 +44,7 @@ function useCycledIndex(totalItems: number, intervalDuration: number): number {
 function AnimatedGridSection({ activeIndex }: { activeIndex: number }) {
     return (
         <motion.section
-            className="grid grid-cols-2 w-full items-center min-h-screen relative overflow-hidden bg-gradient-to-b from-chart-3/10 from-10% via-chart-3/60 to-chart-3/10 outline"
+            className="grid grid-cols-2 w-full items-center min-h-screen relative overflow-hidden bg-gradient-to-b from-chart-3/10 from-10% via-chart-3/60 to-chart-3/10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -121,7 +121,7 @@ function AnimatedText({ text, alignment }: { text: string; alignment: "left" | "
 function DotGridAnimation() {
     return (
         <motion.div
-            className="absolute mx-auto h-full w-full hidden lg:flex items-center justify-center overflow-hidden outline"
+            className="absolute mx-auto h-full w-full hidden lg:flex items-center justify-center overflow-hidden "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

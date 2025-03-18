@@ -23,7 +23,6 @@ const FooterSection = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLEle
                 <div className="flex flex-col lg:flex-row gap-8 justify-between items-start align-top">
                     <div className="flex flex-col gap-8">
                         <div className="lg:text-xl"> Learn DSA the right way!</div>
-                        {/* <embed src="https://github-readme-stats.vercel.app/api/pin/?username=NathanZlion&repo=AlgoEspresso&theme=tokyonight&show_owner=true" type="" className="w-full" /> */}
                         <Link
                             className={cn(buttonVariants({ variant: "outline" }), "w-fit p-5 rounded-full")}
                             href={"https://github.com/NathanZlion/AlgoEspresso/"}
