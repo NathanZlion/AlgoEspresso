@@ -21,24 +21,32 @@ build: clean
 	@echo "✔ Complete"
 
 
+.PHONY: run
+run: clean
+	@echo "Running in production mode..."
+	@mkdir -p $(LOGS_FOLDER)
+	@docker compose -f "docker-compose.yml" up 2> ./$(LOGS_FOLDER)/$(TIME).log || \
+	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/$(TIME).log for details.";
+
+
 .PHONY: dev
 dev:
 	@echo "Creating container in dev mode..."
-	@docker compose -f "docker-compose-dev.yml" up --watch 2> ./$(LOGS_FOLDER)/dev_$(TIME).log || \
-	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/dev_$(TIME).log for details.";
+	@docker compose -f "docker-compose-dev.yml" up --watch 2> ./$(LOGS_FOLDER)/$(TIME).log || \
+	echo "Error: Docker Compose V2 failed. Open log file $(LOGS_FOLDER)/$(TIME).log for details.";
 
 
 .PHONY: clear-logs
 clear-logs:
 	@echo "Clearing logs..."
-	@rm -f ./logs/dev_*.log
+	@rm -f ./logs/*.log
 	@echo "✔ Logs Cleared"
 
 
-.PHONY: down
-down:
+.PHONY: stop
+stop:
 	@echo "Shutting and cleaning Docker dev container..."
-	@if docker compose -f "docker-compose-dev.yml" down 2>/dev/null; then \
+	@if docker compose -f "docker-compose-dev.yml" down; then \
 		: ; \
 	else \
 		echo "Falling back to Docker Compose V1"; \
@@ -99,7 +107,7 @@ help:
 	@echo "  build      - Build the project"
 	@echo "  dev        - Run the project in development; watch mode"
 	@echo "  clear-logs - Clear logs created by the dev target"
-	@echo "  down       - Down the development containers"
+	@echo "  stop       - Stop the development containers"
 	@echo "  lint       - Lint the project"
 	@echo "  test       - Run tests"
 	@echo "  clean      - Clean the project, removing temporary and binary files"
