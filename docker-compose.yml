@@ -1,0 +1,39 @@
+services:
+  frontend:
+    image: frontend
+    container_name: algoespresso_frontend
+    build:
+      context: algoespresso_frontend
+      dockerfile: prod.dockerfile
+      target: runner
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/api/healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+
+  backend:
+    image: backend
+    container_name: algoespresso_backend
+    build:
+      context: algoespresso_backend
+      dockerfile: dockerfile
+      target: runner
+    env_file:
+      - algoespresso_backend/.env
+    healthcheck:
+      test: [ "CMD", "/usr/src/app/healthcheck" ]
+      interval: 30s
+      retries: 3
+      timeout: 5s
+      start_period: 10s
+    ports:
+      - 8080:8080
+    restart: unless-stopped

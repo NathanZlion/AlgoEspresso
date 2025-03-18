@@ -11,15 +11,11 @@ import (
 
 func healthCheckAPICall(url string) bool {
 	resp, err := http.Get(url)
-	fmt.Printf("Pinging url %v ...\n", url)
-
 	return err == nil && resp.StatusCode == http.StatusOK
 }
 
 func readinessCheckAPICall(url string) bool {
 	resp, err := http.Get(url)
-	fmt.Printf("Pinging url %v ...\n", url)
-
 	return err == nil && resp.StatusCode == http.StatusOK
 }
 

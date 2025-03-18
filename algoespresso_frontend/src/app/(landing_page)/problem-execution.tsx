@@ -30,9 +30,8 @@ export default function ProblemSolving() {
     return (
         <section className="relative  h-fit min-h-[90vh]">
             <div className="p-10 lg:py-28 lg:px-16 text-2xl lg:text-7xl grid grid-cols-1 lg:grid-cols-6
-                items-start border relative z-30 bg-background
+                items-start border relative z-30 bg-background/10
                 shadow-[50px_50px_500px_rgba(198,185,140,.6)] gap-6
-                
                 "
             >
 
@@ -90,9 +89,8 @@ const FlowingImages = () => {
                 direction={"right"}
                 loop={0}
                 delay={13}
-                pauseOnHover
-                className="w-full outline h-full"
-                gradient
+                pauseOnClick
+                className="w-full h-full"
             >
                 {images.map((src, i) => (
                     <div key={`child-${i}`} className="mx-12">

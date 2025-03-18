@@ -50,16 +50,13 @@ func (mongodbDatabase *Database) Disconnect() {
 }
 
 func (mongodbDatabase *Database) Health() error {
-	fmt.Println("Pinging MongoDb")
 	timeoutDuration := time.Second * 3
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
 	defer cancel()
 
 	if err := mongodbDatabase.client.Ping(ctx, nil); err != nil {
-		fmt.Printf("Failed Pinging MongoDb %+v \n", err)
 		return err
 	}
 
-	fmt.Println("Pinging Mongo Success")
 	return nil
 }
