@@ -32,8 +32,41 @@ const AzeretMono = LocalFont(
 )
 
 export const metadata: Metadata = {
-  title: "AlgoEspresso",
+  title: {
+    default: "AlgoEspresso",
+    template: "%s | AlgoEspresso",
+  },
+  generator: "AlgoEspresso",
   description: "Best place to learn DSA",
+  metadataBase: new URL('https://algo-espresso.vercel.app/'),
+  keywords: ["DSA", "Data Structures", "Algorithms", "Programming"],
+  authors: [
+    {
+      name: "Nathnael Dereje",
+      url: "https://nathnael-dereje.vercel.app/"
+    }
+  ],
+  creator: "Nathnael Dereje",
+  openGraph: {
+    title: "AlgoEspresso",
+    description: "Best place to learn DSA",
+    siteName: "AlgoEspresso",
+    images: [
+      {
+        url: "/og-image.png",
+        alt: "AlgoEspresso's OG :)",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+    url: "https://algo-espresso.vercel.app/",
+  },
+  robots: {
+    index: true,
+    follow: true
+  },
 };
 
 export default function RootLayout({
