@@ -28,14 +28,14 @@ export default function ProblemSolving() {
         )
 `
     return (
-        <section className="relative  h-fit min-h-[90vh]">
+        <section className="relative h-fit min-h-[90vh]">
             <div className="p-10 lg:py-28 lg:px-16 text-2xl lg:text-7xl grid grid-cols-1 lg:grid-cols-6
-                items-start border relative z-30 bg-background/10
+                items-start relative z-30 bg-background/10
                 shadow-[50px_50px_500px_rgba(198,185,140,.6)] gap-6
                 "
             >
 
-                <div className="container order-2 lg:order-1 lg:col-span-4 ">
+                <div className="order-2 lg:order-1 lg:col-span-4 ">
                     <CodeBlock filename="main.py" language="python" tabs={[
                         {
                             code: code,
@@ -45,7 +45,7 @@ export default function ProblemSolving() {
                     ]} />
                 </div>
 
-                <div className="container order-1 lg:order-2 w-full h-full  grid grid-row-6  lg:col-span-2">
+                <div className=" order-1 lg:order-2 w-full h-full  grid grid-row-6  lg:col-span-2">
                     <div className="w-full row-span-4 flex flex-col justify-evenly">
                         <h1 className="lg:text-3xl text-start"># Code. Submit. Compete. </h1>
                         <h1 className="lg:text-3xl bg-gradient-to-r from-primary to-red-300 text-transparent bg-clip-text text-justify"> Run, Compare runtimes.</h1>

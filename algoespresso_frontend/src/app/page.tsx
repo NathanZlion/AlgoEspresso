@@ -1,11 +1,9 @@
-'use client'
-
 import { ModeToggle } from "@/components/mode-toggle";
-import LandingPage from "./(landing_page)/landingpage";
-import {
-  // SignedIn,
-  SignedOut
-} from "@clerk/nextjs";
+import LandingPage from "./_components/page";
+// import {
+// SignedIn,
+//   SignedOut
+// } from "@clerk/nextjs";
 // import { useRouter } from "next/navigation";
 // import { useEffect } from "react";
 
@@ -25,9 +23,9 @@ export default function Home() {
         </SignedIn> */}
 
         <ModeToggle />
-        <SignedOut>
-          <LandingPage />
-        </SignedOut>
+        {/* <SignedOut> */}
+        <LandingPage />
+        {/* </SignedOut> */}
       </main>
     </div>
   );

@@ -7,7 +7,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 #### INSTALL DEPENDENCIES ####
 FROM base AS dev-deps
 
-RUN apk add --no-cache libc6-compa
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 

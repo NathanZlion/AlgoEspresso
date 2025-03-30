@@ -12,13 +12,15 @@ export default function LearningPathSection() {
     const activeIndex = useCycledIndex(LEFT_ITEMS.length + RIGHT_ITEMS.length, ANIMATION_DURATION);
 
     return (
-        <section className="border -z-50 relative flex flex-col items-start justify-center">
-            <MacbookScroll
-                key="Landing Page Macbook Scroll"
-                title="Great Structured Learning Paths"
-                src="/roadmap-screen.webp"
-                showGradient={true}
-            />
+        <section className="-z-50 relative flex flex-col items-start justify-center">
+            <div className="max-lg:hidden mx-auto">
+                <MacbookScroll
+                    key="Landing Page Macbook Scroll"
+                    title="Great Structured Learning Paths"
+                    src="/roadmap-screen.webp"
+                    showGradient={true}
+                />
+            </div>
 
             <AnimatedGridSection activeIndex={activeIndex} />
         </section>
@@ -44,7 +46,7 @@ function useCycledIndex(totalItems: number, intervalDuration: number): number {
 function AnimatedGridSection({ activeIndex }: { activeIndex: number }) {
     return (
         <motion.section
-            className="grid grid-cols-2 w-full items-center min-h-screen relative overflow-hidden bg-gradient-to-b from-chart-3/10 from-10% via-chart-3/60 to-chart-3/10"
+            className="grid grid-cols-2 w-full items-center min-h-[80vh] max-h-fit  relative overflow-hidden bg-gradient-to-b from-chart-3/10 from-10% via-chart-3/60 to-chart-3/10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

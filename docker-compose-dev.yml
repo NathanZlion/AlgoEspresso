@@ -37,6 +37,8 @@ services:
       context: algoespresso_backend
       dockerfile: dockerfile
       target: dev
+    env_file:
+      - algoespresso_backend/.env
     networks:
       - backend-frontend-net
     healthcheck:
