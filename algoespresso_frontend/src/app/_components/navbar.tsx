@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { MagicButton } from "@/components/ui/magic-button";
 import { SignUpButton } from "@clerk/nextjs";
-import { IconBook, IconBook2, IconCodeAsterisk, IconCube3dSphere, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconBook2, IconCodeAsterisk, IconCube3dSphere, IconMenu2, IconX } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";

@@ -23,7 +23,7 @@ export default function NotFound() {
                 </p>
             </div>
 
-            Let's head back before things get weirder...
+            Let&apos;s head back before things get weirder...
             <Button variant={"outline"} className="text-xl">
                 <Link href="/">
                     <IconHome className="inline" />
