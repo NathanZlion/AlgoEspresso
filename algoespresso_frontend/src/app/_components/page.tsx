@@ -9,7 +9,7 @@ import ProblemSolving from "./problem-execution";
 
 export default function LandingPage() {
     return (
-        <div className="font-dotGothic container mx-auto ">
+        <div className="font-dotGothic mx-auto w-full lg:px-10">
             <header>
                 <LandingPageNavBar />
             </header>

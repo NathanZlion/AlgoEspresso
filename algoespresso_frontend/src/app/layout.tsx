@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import LocalFont from "next/font/local"
 import "./globals.css";
-import "./marquee.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from "@clerk/themes";
