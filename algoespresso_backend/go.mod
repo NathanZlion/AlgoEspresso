@@ -6,7 +6,7 @@ require (
 	github.com/clerk/clerk-sdk-go/v2 v2.2.0
 	github.com/gofiber/fiber/v2 v2.52.7
 	github.com/joho/godotenv v1.5.1
-	github.com/redis/go-redis/v9 v9.7.1
+	github.com/redis/go-redis/v9 v9.7.3
 	go.mongodb.org/mongo-driver v1.17.3
 	go.uber.org/dig v1.18.1
 )
