@@ -28,7 +28,7 @@ export default function ProblemSolving() {
         )
 `
     return (
-        <section className="relative h-fit min-h-[90vh]">
+        <section className="relative h-fit min-h-[90vh] bg-background">
             <div className="p-10 lg:py-28 lg:px-16 text-2xl lg:text-7xl grid grid-cols-1 lg:grid-cols-6
                 items-start relative z-30 bg-background/10
                 shadow-[50px_50px_500px_rgba(198,185,140,.6)] gap-6
